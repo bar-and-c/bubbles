@@ -11,14 +11,7 @@ namespace Bubbles
 {
     public class GameObject : INotifyPropertyChanged
     {
-#if SIZE_AS_DEPENDENCY_OBJECT
-        public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(Size), typeof(GameObject), new PropertyMetadata(""));
-        public Size Size
-        {
-            get { return (Size)GetValue(SizeProperty); }
-            set { SetValue(SizeProperty, value); }
-        }
-#else
+
         private Size _size;
         public Size Size
         {
@@ -33,16 +26,7 @@ namespace Bubbles
             }
         }
 
-#endif
 
-#if TOP_AS_DEPENDENCY_OBJECT
-        public static readonly DependencyProperty TopProperty = DependencyProperty.Register("Top", typeof(double), typeof(GameObject), new PropertyMetadata(""));
-        public double Top
-        {
-            get { return (double)GetValue(TopProperty); }
-            set { SetValue(TopProperty, value); OnPropertyChanged("Top"); }
-        }
-#else
         private double _top;
         public double Top
         {
@@ -56,16 +40,7 @@ namespace Bubbles
                 }
             }
         }
-#endif
 
-#if LEFT_AS_DEPENDENCY_OBJECT
-        public static readonly DependencyProperty LeftProperty = DependencyProperty.Register("Left", typeof(double), typeof(GameObject), new PropertyMetadata(""));
-        public double Left
-        {
-            get { return (double)GetValue(LeftProperty); }
-            set { SetValue(LeftProperty, value); }
-        }
-#else
         private double _left;
         public double Left
         {
@@ -79,11 +54,6 @@ namespace Bubbles
                 }
             }
         }
-#endif
-
-
-
-
 
 
         public event PropertyChangedEventHandler PropertyChanged;

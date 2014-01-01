@@ -13,33 +13,17 @@ namespace Bubbles
     {
         private int _numberOfBubbles = 10;
         private static Random _random = new Random();
-        private DispatcherTimer _dispatcherTimer;
+        private DispatcherTimer _bubbleTimer;
 
         public MainViewModel()
         {
             GameObjects = new ObservableCollection<GameObject>();
             
-            _dispatcherTimer = new DispatcherTimer();
-            _dispatcherTimer.Interval = TimeSpan.FromMilliseconds(500);
-            _dispatcherTimer.Tick += _dispatcherTimer_Tick;
+            _bubbleTimer = new DispatcherTimer();
+            _bubbleTimer.Interval = TimeSpan.FromMilliseconds(500);
+            _bubbleTimer.Tick += _dispatcherTimer_Tick;
         }
 
-        void _dispatcherTimer_Tick(object sender, object e)
-        {
-            if (GameObjects.Count < _numberOfBubbles)
-            {
-                Bubble bubble = GetRandomBubble();
-                GameObjects.Add(bubble);
-            }
-            if (GameObjects.Count < _numberOfBubbles)
-            {
-                _dispatcherTimer.Interval = TimeSpan.FromMilliseconds(_random.Next(500, 2000));
-            }
-            else
-            {
-                _dispatcherTimer.Stop();
-            }
-        }
 
         public ObservableCollection<GameObject> GameObjects { get; private set; }
 
@@ -52,44 +36,28 @@ namespace Bubbles
 
             GameObjects.Clear();
 
-            // DEBUG: Adding another GameObject to test the GUI stuff
-
+            // TODO: Adding another GameObject to test the GUI stuff. Still, it looks pretty cool, might keep it in. 
             GameObjects.Add(new GameObject() { Left = GameArea.Width/2 - 250, Top = 900 });
-            
-            _dispatcherTimer.Start();
 
-//            await Task.Run(() => CreateBubbles());
+            // Dropping in the bubbles at random intervals
+            _bubbleTimer.Start();
         }
 
-        private Bubble GetRandomBubble()
+        void _dispatcherTimer_Tick(object sender, object e)
         {
-            int margin = 100;
-            double left = _random.Next(margin, (int)GameArea.Width - margin);
-            double top = _random.Next(margin, (int)GameArea.Height - margin);
-            //Task.Delay(TimeSpan.FromMilliseconds(_random.Next(500, 2000)));
-            return new Bubble() { Left = left, Top = top };
-        }
-
-
-        private void CreateBubbles()
-        {
-            for (int i = 0; i < _numberOfBubbles; i++)
+            if (GameObjects.Count < _numberOfBubbles)
             {
-                Point location = new Point
-                {
-                    X = _random.Next(10, (int)GameArea.Width - 10),
-                    Y = _random.Next(10, (int)GameArea.Height - 10)
-                };
-                Bubble bubble = new Bubble() { Left = location.X, Top = location.Y };
-                GameObjects.Add(bubble);
-
-                Task.Delay(TimeSpan.FromMilliseconds(_random.Next(500, 2000)));
+                GameObjects.Add(new Bubble(GameArea));
             }
-
-            // DEBUG: Adding another GameObject to test the GUI stuff
-            GameObjects.Add(new GameObject() { Left = 400, Top = 600 });
+            if (GameObjects.Count < _numberOfBubbles)
+            {
+                _bubbleTimer.Interval = TimeSpan.FromMilliseconds(_random.Next(500, 2000));
+            }
+            else
+            {
+                _bubbleTimer.Stop();
+            }
         }
-
 
     }
 }

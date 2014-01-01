@@ -14,31 +14,27 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace Bubbles
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
-        public MainViewModel ViewModel { get; set; }
+        private MainViewModel _viewModel;
 
         public MainPage()
         {
             this.InitializeComponent();
 
-            ViewModel = new MainViewModel();
-            DataContext = ViewModel;
+            _viewModel = new MainViewModel();
+            DataContext = _viewModel;
 
             Loaded += (x, e) => CreateGame();
         }
 
         private void CreateGame()
         {
-            ViewModel.GameArea = new Size(this.ActualWidth, this.ActualHeight);
-            ViewModel.NewGame();
+            _viewModel.GameArea = new Size(this.ActualWidth, this.ActualHeight);
+            _viewModel.NewGame();
         }
 
         private void Ellipse_PointerMoved(object sender, PointerRoutedEventArgs e)
@@ -47,9 +43,10 @@ namespace Bubbles
             if (ellipse.DataContext is Bubble)
             {
                 Bubble b = (Bubble)ellipse.DataContext;
-                b.Gas += e.GetCurrentPoint(ellipse).Properties.Pressure * 100;
+//                b.Gas += e.GetCurrentPoint(ellipse).Properties.Pressure;
 
-                b.Top -= e.GetCurrentPoint(ellipse).Properties.Pressure; // TODO: Just for testing
+                /* TODO: Boosting the value just to get a visible change on the opacity. As stated elsewhere - think it through! */
+                b.Gas += e.GetCurrentPoint(ellipse).Properties.Pressure * 100;
             }
         }
 
