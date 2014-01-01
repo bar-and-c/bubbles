@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>WinRTXamlToolkit.Debugging</id>
+    <version>1.5.4.3</version>
+    <title>WinRT XAML Toolkit - Debugging Tools</title>
+    <authors>Filip Skakun</authors>
+    <owners>Filip Skakun</owners>
+    <licenseUrl>http://winrtxamltoolkit.codeplex.com/license</licenseUrl>
+    <projectUrl>http://winrtxamltoolkit.codeplex.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A set of debugging controls and helpers for Windows Runtime XAML applications.</description>
+    <releaseNotes>WinRT XAML Toolkit debugging components for Windows 8.0 and 8.1.
+
+      Features
+      - DebugConsole - an always on top debugging overlay useful during full-screen debugging
+      - DC.Trace() - writes line(s) to the DebugConsole
+      - DC.TraceLocalized() - includes caller information (method, line number)
+      - DC.TraceMemoryCheckPoint() - writes managed memory usage (note it doesn't help with WinRT objects such as BitmapImage)
+      - DC.TraceInterval() - writes time elapsed between calls
+      - DC.Clear() - clears the console
+      - DC.Show()/Hide() - shows/hides the console
+      - DC.ShowVisualTree() - shows the visual tree debugger view
+
+      See also
+      - WinRTXamlToolkit for other controls and tools
+      - WinRTXamlToolkit.Composition for helpers for rendering the XAML UI into a bitmap
+      - WinRTXamlToolkit.Controls.Calendar for a calendar control</releaseNotes>
+    <language>en-US</language>
+    <tags>winrt xaml toolkit winrtxamltoolkit xyzzer debugging debug diagnostics trace</tags>
+    <dependencies>
+      <dependency id="WinRTXamlToolkit" version="1.5.4.3" />
+    </dependencies>
+  </metadata>
+</package>

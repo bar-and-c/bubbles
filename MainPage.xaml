@@ -1,0 +1,69 @@
+﻿<Page
+    x:Class="Bubbles.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Bubbles"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+
+        <DataTemplate x:Key="someOtherTemplate">
+            <Ellipse Fill="WhiteSmoke" Width="30" Height="30"/>
+            <!--         
+            <Ellipse Fill="Green" Stroke="Black" Height="{Binding Size.Height}" Width="{Binding Size.Width}" Opacity="{Binding GasPressure}"/>
+-->
+        </DataTemplate>
+        <!-- TODO: Maybe define "exploding" "sprites" here? -->
+        <DataTemplate x:Key="bubbleTemplate">
+            <Ellipse Fill="Red" Stroke="WhiteSmoke" Height="{Binding Size.Height}" Width="{Binding Size.Width}" Opacity="{Binding GasPressure}"/>
+            <!--         
+            <Ellipse Fill="Blue" Width="30" Height="30"/>
+
+            <Ellipse Fill="Red" Stroke="WhiteSmoke" Height="{Binding Size.Height}" Width="{Binding Size.Width}" Opacity="{Binding GasPressure}"/>
+-->
+        </DataTemplate>
+        <local:GameObjectTemplateSelector x:Key="gameObjectTemplate" CustTemplate="{StaticResource someOtherTemplate}" BubbleTemplate="{StaticResource bubbleTemplate}"/>
+
+
+
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <ItemsControl ItemsSource="{Binding GameObjects}" x:Name="GameArea" ItemTemplateSelector="{StaticResource gameObjectTemplate}">
+        <!-- ItemTemplateSelector="{StaticResource gameObjectTemplate}" -->
+            
+            
+            <!-- 
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Ellipse Fill="Green" Canvas.Left="{Binding X}"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            -->
+            
+            
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                    <Setter Property="Canvas.Top" Value="{Binding Location.Y}"/>
+                    <!--
+                    
+                    <Setter Property="Canvas.Left" Value="{Binding Location.X}"/>
+                        <Setter Property="Canvas.Top" Value="{Binding Location.Y}"/>
+
+                                        <Setter Property="Canvas.Left" Value="200"/>
+                    <Setter Property="Canvas.Top" Value="200"/>
+
+   -->
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas Loaded="Canvas_Loaded"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </Grid>
+</Page>
