@@ -36,15 +36,9 @@ namespace Bubbles
 
         private void CreateGame()
         {
-//            ViewModel.GameArea = new Size(GameArea.Width, GameArea.Height);
             ViewModel.GameArea = new Size(this.ActualWidth, this.ActualHeight);
-            ViewModel.NewGame(2);
+            ViewModel.NewGame();
         }
 
-        private void Canvas_Loaded(object sender, RoutedEventArgs e)
-        {
-            Canvas c = (Canvas)sender;
-            System.Diagnostics.Debug.WriteLine("Sender: {0}", c);
-        }
     }
 }

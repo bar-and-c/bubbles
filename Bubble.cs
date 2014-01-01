@@ -11,12 +11,8 @@ using Windows.UI.Xaml;
 namespace Bubbles
 {
 
-    public class Bubble : GameObject, INotifyPropertyChanged
+    public class Bubble : GameObject
     {
-
-
-
-
         private double _gas;
         private double _maxGas;
 
@@ -34,38 +30,10 @@ namespace Bubbles
             int diameter = r.Next(40, 200);
             Size = new Size(diameter, diameter);
 
-            _maxGas = Math.Pow(diameter, 2); // TODO: It should be related to size. Experiment to the right amount.
+            _maxGas = Math.Pow(diameter, 2); // TODO: It is related to size. Experiment to the right amount.
             Gas = _maxGas / 3 + r.NextDouble() * _maxGas / 3;
         }
 
-
-#if USE_DEPENDENCY_PROPERTY
-        public static readonly DependencyProperty XProperty = DependencyProperty.Register("X", typeof(double), typeof(GameObject), new PropertyMetadata(""));
-        public double X
-        {
-            get { return (double)GetValue(XProperty); }
-            set { SetValue(XProperty, value); }
-        }
-#else
-        /*
-        private double _x;
-        public double X
-        {
-            get
-            {
-                return _x;
-            }
-            set
-            {
-                if (value != _x)
-                {
-                    _x = value;
-                    OnPropertyChanged("X");
-                }
-            }
-        }
-         * */
-#endif
 
         public double Gas
         {
@@ -89,35 +57,5 @@ namespace Bubbles
         }
 
 
-#if USE_STROKE
-        public Brush Stroke
-        {
-            get
-            {
-                return _stroke;
-            }
-            set
-            {
-                if (value != _stroke)
-                {
-                    value = _stroke;
-                    OnPropertyChanged("Stroke");
-                }
-            }
-        }
-#endif
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(String name)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                PropertyChangedEventArgs e = new PropertyChangedEventArgs(name);
-                handler(this, e);
-            }
-        }
     }
 }

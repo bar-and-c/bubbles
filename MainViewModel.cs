@@ -9,6 +9,8 @@ namespace Bubbles
 {
     public class MainViewModel
     {
+        private int _numberOfBubbles = 2;
+
         public static Random random = new Random();
 
         private ObservableCollection<GameObject> _gameObjects;
@@ -19,28 +21,29 @@ namespace Bubbles
 
         public Size GameArea { get; set; }
 
-        internal void NewGame(int p)
+        internal void NewGame()
         {
 
             GameObjects.Clear();
 
-            CreateEnemies(p);
+            CreateBubbles();
         }
 
-        private void CreateEnemies(int numberofEnemies)
+        private void CreateBubbles()
         {
-            for (int i = 0; i < numberofEnemies; i++)
+            for (int i = 0; i < _numberOfBubbles; i++)
             {
                 Point location = new Point
                 {
                     X = random.Next(10, (int)GameArea.Width - 10),
                     Y = random.Next(10, (int)GameArea.Height - 10)
                 };
-                Bubble bubble = new Bubble() { Location = location, X=location.X };
+                Bubble bubble = new Bubble() { Location = location, X = location.X };
                 GameObjects.Add(bubble);
-//                WinRTXamlToolkit.Debugging.DC.ShowVisualTree();
-
             }
+
+            // DEBUG: Adding another GameObject to test the GUI stuff
+            GameObjects.Add(new GameObject() { X = 400, Location = new Point(400, 600) });
         }
 
 

@@ -14,30 +14,26 @@
                 <!-- Work with the colours scheme, but the general idea is that lower "gas pressure" makes the colour fade, 
                      but leaving a faint shadow and a border. -->
                 <Ellipse Fill="Red" Stroke="WhiteSmoke" Height="{Binding Size.Height}" Width="{Binding Size.Width}" Opacity="{Binding GasPressure}"/>
-                <Ellipse Fill="White" Opacity="0.2" Height="{Binding Size.Height}" Width="{Binding Size.Width}" />
+                <Ellipse Fill="DarkGray" Opacity="0.2" Height="{Binding Size.Height}" Width="{Binding Size.Width}" />
                 <Ellipse Stroke="WhiteSmoke"  Height="{Binding Size.Height}" Width="{Binding Size.Width}" />
             </Canvas>
         </DataTemplate>
 
-        <!-- TODO: Maybe define "exploding" "sprites" here? -->
+        <!-- TODO: Should I define templates for dying objects here? And obstacles, of course. For now, this is just for test purposes. -->
         <DataTemplate x:Key="someOtherTemplate">
-            <Ellipse Fill="WhiteSmoke" Width="30" Height="30"/>
-            <!--         
-            <Ellipse Fill="Green" Stroke="Black" Height="{Binding Size.Height}" Width="{Binding Size.Width}" Opacity="{Binding GasPressure}"/>
--->
+            <Ellipse Fill="White" Width="500" Height="30" Canvas.Left="200" Canvas.Top="200" Opacity="0.4" />
         </DataTemplate>
-        <local:GameObjectTemplateSelector x:Key="gameObjectTemplate" CustTemplate="{StaticResource someOtherTemplate}" BubbleTemplate="{StaticResource bubbleTemplate}"/>
-
-
+        <local:GameObjectTemplateSelector x:Key="gameObjectTemplate" OtherTemplate="{StaticResource someOtherTemplate}" BubbleTemplate="{StaticResource bubbleTemplate}"/>
 
     </Page.Resources>
 
+    
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ItemsControl ItemsSource="{Binding GameObjects}" x:Name="GameArea" ItemTemplateSelector="{StaticResource gameObjectTemplate}">
+        <ItemsControl ItemsSource="{Binding GameObjects}" ItemTemplateSelector="{StaticResource gameObjectTemplate}" >
         
             <ItemsControl.ItemContainerStyle>
                 <Style TargetType="ContentPresenter">
-                    <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                    <Setter Property="Canvas.Left" Value="{Binding Path=X, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
                     <Setter Property="Canvas.Top" Value="{Binding Location.Y}"/>
                 </Style>
             </ItemsControl.ItemContainerStyle>
