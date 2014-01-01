@@ -9,19 +9,21 @@
 
     <Page.Resources>
 
+        <DataTemplate x:Key="bubbleTemplate">
+            <Canvas>
+                <!-- Work with the colours scheme, but the general idea is that lower "gas pressure" makes the colour fade, 
+                     but leaving a faint shadow and a border. -->
+                <Ellipse Fill="Red" Stroke="WhiteSmoke" Height="{Binding Size.Height}" Width="{Binding Size.Width}" Opacity="{Binding GasPressure}"/>
+                <Ellipse Fill="White" Opacity="0.2" Height="{Binding Size.Height}" Width="{Binding Size.Width}" />
+                <Ellipse Stroke="WhiteSmoke"  Height="{Binding Size.Height}" Width="{Binding Size.Width}" />
+            </Canvas>
+        </DataTemplate>
+
+        <!-- TODO: Maybe define "exploding" "sprites" here? -->
         <DataTemplate x:Key="someOtherTemplate">
             <Ellipse Fill="WhiteSmoke" Width="30" Height="30"/>
             <!--         
             <Ellipse Fill="Green" Stroke="Black" Height="{Binding Size.Height}" Width="{Binding Size.Width}" Opacity="{Binding GasPressure}"/>
--->
-        </DataTemplate>
-        <!-- TODO: Maybe define "exploding" "sprites" here? -->
-        <DataTemplate x:Key="bubbleTemplate">
-            <Ellipse Fill="Red" Stroke="WhiteSmoke" Height="{Binding Size.Height}" Width="{Binding Size.Width}" Opacity="{Binding GasPressure}"/>
-            <!--         
-            <Ellipse Fill="Blue" Width="30" Height="30"/>
-
-            <Ellipse Fill="Red" Stroke="WhiteSmoke" Height="{Binding Size.Height}" Width="{Binding Size.Width}" Opacity="{Binding GasPressure}"/>
 -->
         </DataTemplate>
         <local:GameObjectTemplateSelector x:Key="gameObjectTemplate" CustTemplate="{StaticResource someOtherTemplate}" BubbleTemplate="{StaticResource bubbleTemplate}"/>
@@ -32,38 +34,20 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <ItemsControl ItemsSource="{Binding GameObjects}" x:Name="GameArea" ItemTemplateSelector="{StaticResource gameObjectTemplate}">
-        <!-- ItemTemplateSelector="{StaticResource gameObjectTemplate}" -->
-            
-            
-            <!-- 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Ellipse Fill="Green" Canvas.Left="{Binding X}"/>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            -->
-            
-            
+        
             <ItemsControl.ItemContainerStyle>
                 <Style TargetType="ContentPresenter">
                     <Setter Property="Canvas.Left" Value="{Binding X}"/>
                     <Setter Property="Canvas.Top" Value="{Binding Location.Y}"/>
-                    <!--
-                    
-                    <Setter Property="Canvas.Left" Value="{Binding Location.X}"/>
-                        <Setter Property="Canvas.Top" Value="{Binding Location.Y}"/>
-
-                                        <Setter Property="Canvas.Left" Value="200"/>
-                    <Setter Property="Canvas.Top" Value="200"/>
-
-   -->
                 </Style>
             </ItemsControl.ItemContainerStyle>
+            
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas Loaded="Canvas_Loaded"/>
+                    <Canvas />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
+ 
         </ItemsControl>
     </Grid>
 </Page>
