@@ -14,14 +14,27 @@
                 <!-- Work with the colours scheme, but the general idea is that lower "gas pressure" makes the colour fade, 
                      but leaving a faint shadow and a border. -->
                 <Ellipse Fill="Red" Stroke="WhiteSmoke" Height="{Binding Size.Height}" Width="{Binding Size.Width}" Opacity="{Binding GasPressure}"/>
-                <Ellipse Fill="DarkGray" Opacity="0.2" Height="{Binding Size.Height}" Width="{Binding Size.Width}" />
+                <Ellipse Fill="DarkGray" Opacity="0.2" Height="{Binding Size.Height}" Width="{Binding Size.Width}" PointerMoved="Ellipse_PointerMoved" />
                 <Ellipse Stroke="WhiteSmoke"  Height="{Binding Size.Height}" Width="{Binding Size.Width}" />
+                <Canvas.RenderTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="0"/>
+                        <TranslateTransform X="{Binding Left}" Y="{Binding Top}"/>
+                    </TransformGroup>
+                </Canvas.RenderTransform>
             </Canvas>
         </DataTemplate>
 
         <!-- TODO: Should I define templates for dying objects here? And obstacles, of course. For now, this is just for test purposes. -->
         <DataTemplate x:Key="someOtherTemplate">
-            <Ellipse Fill="White" Width="500" Height="30" Canvas.Left="200" Canvas.Top="200" Opacity="0.4" />
+            <Ellipse Fill="White" Width="500" Height="30" Canvas.Left="200" Canvas.Top="200" Opacity="0.4" PointerMoved="Ellipse_PointerMoved" >
+                <Ellipse.RenderTransform>
+                    <TransformGroup>
+                        <RotateTransform Angle="0"/>
+                        <TranslateTransform X="{Binding Left}" Y="{Binding Top, Mode=TwoWay}"/>
+                    </TransformGroup>
+                </Ellipse.RenderTransform>
+            </Ellipse>
         </DataTemplate>
         <local:GameObjectTemplateSelector x:Key="gameObjectTemplate" OtherTemplate="{StaticResource someOtherTemplate}" BubbleTemplate="{StaticResource bubbleTemplate}"/>
 
@@ -30,13 +43,18 @@
     
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <ItemsControl ItemsSource="{Binding GameObjects}" ItemTemplateSelector="{StaticResource gameObjectTemplate}" >
-        
+
+            <!-- This seems to be the standard way of binding the position of the ellipses, but I can't get it to work. 
+                 Instead I used a Silverlight trick, courtesy of Stack Overflow:
+                 http://stackoverflow.com/questions/8808473/after-placing-itemscontrol-item-on-canvas-get-its-transform-silverlight-5 -->
+            <!--
             <ItemsControl.ItemContainerStyle>
                 <Style TargetType="ContentPresenter">
-                    <Setter Property="Canvas.Left" Value="{Binding Path=X, Mode=TwoWay, UpdateSourceTrigger=Explicit}"/>
+                    <Setter Property="Canvas.Left" Value="{Binding X}"/>
                     <Setter Property="Canvas.Top" Value="{Binding Location.Y}"/>
                 </Style>
             </ItemsControl.ItemContainerStyle>
+            -->
             
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>

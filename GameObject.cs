@@ -9,33 +9,77 @@ using Windows.UI.Xaml;
 
 namespace Bubbles
 {
-    public class GameObject : DependencyObject, INotifyPropertyChanged
+    public class GameObject : INotifyPropertyChanged
     {
+#if SIZE_AS_DEPENDENCY_OBJECT
         public static readonly DependencyProperty SizeProperty = DependencyProperty.Register("Size", typeof(Size), typeof(GameObject), new PropertyMetadata(""));
         public Size Size
         {
             get { return (Size)GetValue(SizeProperty); }
             set { SetValue(SizeProperty, value); }
         }
-
-        public static readonly DependencyProperty LocationProperty = DependencyProperty.Register("Location", typeof(Point), typeof(GameObject), new PropertyMetadata(""));
-        public Point Location
+#else
+        private Size _size;
+        public Size Size
         {
-            get { return (Point)GetValue(LocationProperty); }
-            set { SetValue(LocationProperty, value); }
+            get { return _size; }
+            set
+            {
+                if (value != _size)
+                {
+                    _size = value;
+                    OnPropertyChanged("Size");
+                }
+            }
         }
 
+#endif
 
+#if TOP_AS_DEPENDENCY_OBJECT
+        public static readonly DependencyProperty TopProperty = DependencyProperty.Register("Top", typeof(double), typeof(GameObject), new PropertyMetadata(""));
+        public double Top
+        {
+            get { return (double)GetValue(TopProperty); }
+            set { SetValue(TopProperty, value); OnPropertyChanged("Top"); }
+        }
+#else
+        private double _top;
+        public double Top
+        {
+            get { return _top; }
+            set 
+            {
+                if (value != _top)
+                {
+                    _top = value;
+                    OnPropertyChanged("Top");
+                }
+            }
+        }
+#endif
 
-
-
-
-
-
-
-
-
-
+#if LEFT_AS_DEPENDENCY_OBJECT
+        public static readonly DependencyProperty LeftProperty = DependencyProperty.Register("Left", typeof(double), typeof(GameObject), new PropertyMetadata(""));
+        public double Left
+        {
+            get { return (double)GetValue(LeftProperty); }
+            set { SetValue(LeftProperty, value); }
+        }
+#else
+        private double _left;
+        public double Left
+        {
+            get { return _left; }
+            set
+            {
+                if (value != _left)
+                {
+                    _left = value;
+                    OnPropertyChanged("Left");
+                }
+            }
+        }
+#endif
 
 
 
@@ -43,33 +87,13 @@ namespace Bubbles
 
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(String name)
+        protected void OnPropertyChanged(string name)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
             {
-                PropertyChangedEventArgs e = new PropertyChangedEventArgs(name);
-                handler(this, e);
+                handler(this, new PropertyChangedEventArgs(name));
             }
         }
-
-        private double _x;
-        public double X
-        {
-            get
-            {
-                return _x;
-            }
-            set
-            {
-                if (value != _x)
-                {
-                    _x = value;
-                    OnPropertyChanged("X");
-                }
-            }
-        }
-
     }
 }

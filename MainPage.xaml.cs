@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -38,6 +39,18 @@ namespace Bubbles
         {
             ViewModel.GameArea = new Size(this.ActualWidth, this.ActualHeight);
             ViewModel.NewGame();
+        }
+
+        private void Ellipse_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            Ellipse ellipse = (Ellipse) e.OriginalSource;
+            if (ellipse.DataContext is Bubble)
+            {
+                Bubble b = (Bubble)ellipse.DataContext;
+                b.Gas += e.GetCurrentPoint(ellipse).Properties.Pressure * 100;
+
+                b.Top -= e.GetCurrentPoint(ellipse).Properties.Pressure; // TODO: Just for testing
+            }
         }
 
     }

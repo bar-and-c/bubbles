@@ -16,13 +16,28 @@ namespace Bubbles
         private double _gas;
         private double _maxGas;
 
+#if DEPENDENCY_OBJECT
         public static readonly DependencyProperty GasPressureProperty = DependencyProperty.Register("GasPressure", typeof(double), typeof(Bubble), new PropertyMetadata(""));
         public double GasPressure
         {
             get { return (double)GetValue(GasPressureProperty); }
             set { SetValue(GasPressureProperty, value); }
         }
-
+#else
+        private double _gasPressure;
+        public double GasPressure
+        {
+            get { return _gasPressure; }
+            set 
+            {
+            if (value != _gasPressure)
+            {
+                _gasPressure = value;
+                OnPropertyChanged("GasPressure");
+            }
+            }
+        }
+#endif
 
         public Bubble()
         {
@@ -31,7 +46,7 @@ namespace Bubbles
             Size = new Size(diameter, diameter);
 
             _maxGas = Math.Pow(diameter, 2); // TODO: It is related to size. Experiment to the right amount.
-            Gas = _maxGas / 3 + r.NextDouble() * _maxGas / 3;
+            Gas = _maxGas / 4 + r.NextDouble() * _maxGas / 2;
         }
 
 
