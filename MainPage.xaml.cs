@@ -43,11 +43,20 @@ namespace Bubbles
             if (ellipse.DataContext is Bubble)
             {
                 Bubble b = (Bubble)ellipse.DataContext;
-//                b.Gas += e.GetCurrentPoint(ellipse).Properties.Pressure;
 
-                /* TODO: Boosting the value just to get a visible change on the opacity. As stated elsewhere - think it through! */
-                b.Gas += e.GetCurrentPoint(ellipse).Properties.Pressure * 100;
+                /* TODO: Boosting the value just to get a visible change on the opacity. 
+                 * As stated elsewhere - think it through! Maybe it's better done elsewhere. Etc. */
+                b.Gas += ConvertToGamePressure(e.GetCurrentPoint(ellipse).Properties.Pressure);
             }
+        }
+
+        // For a better game experience, transform the incoming pressure to something more exciting.
+        private double ConvertToGamePressure(float p)
+        {
+            // Minimum pressure is about 0.53, maximum is 1.0 
+            double offset = 0.53;
+            double scaledIncomingPressure = (p - offset) * 2; // TODO: Think it through properly, after some sleep!!!
+            return Math.Pow(100, scaledIncomingPressure);
         }
 
     }
