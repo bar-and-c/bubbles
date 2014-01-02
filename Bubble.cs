@@ -17,7 +17,8 @@ namespace Bubbles
         private double _maxGas;
         private double _gasPressure;
         private Size _gameArea;
-
+        private double _dropSpeed;
+        private double _dropSpeedIncrease;
 
         public Bubble(Size GameArea)
         {
@@ -37,6 +38,9 @@ namespace Bubbles
             int margin = 100;
             Left = r.Next(margin, (int)_gameArea.Width - margin);
             Top = GetHorizontalPositionFromGasPressure();
+
+            _dropSpeed = 5; // TODO: Experiment to a good value. This will be increased over time. 
+            _dropSpeedIncrease = 0.05;
         }
 
         // This is basically just a relative gas metric, normalized for GUI usage. TODO: A bit smelly.
@@ -80,9 +84,54 @@ namespace Bubbles
         public override void Update()
         {
             base.Update();
+
+            AddGas(GetGasLeakage());
+            _dropSpeed += _dropSpeedIncrease;
             Top = GetHorizontalPositionFromGasPressure();
 
-//            Gas -= GetGasLeakage();
+        }
+
+        private double GetGasLeakage()
+        {
+            /* A first shot at it. 
+             * It should be based on size. And pressure? Yes, that sounds reasonable.
+             * A smaller bubble leaks gas faster, I think. It also fills up faster. 
+             * Higher pressure (i.e. higher altitude) means a larger leakage. 
+             * And it should be negative, since it's a leakage.
+             * 
+             * Experimenting here, making it inversely proportional to the diameter, not area. 
+             * And multiplying with some constant to keep the drop velocity reasonable.
+             */
+
+            /* A second thought, after experimenting a bit (see below).
+             * I think I'd better go all in on the physics instead. Formulate these things 
+             * in terms of mass/force/acceleration etc.:
+             * 
+             * - Pressing a ball could hold it still while we add gas (i.e. accumulate in a seperate variable).
+             * 
+             * - Releasing a ball could use that accumulated gas amount as a force upwards, resulting in acceleration upwards. 
+             * 
+             * - There is also acceleration downwards. Does mass come into this? Mass in our case is the amount of gas, innit?
+             *   Not really, there's also the ball's size. But all that would imply that bigger balls fall faster, unlike my experiments. 
+             *   Still, these experiments stink anyway, probably better off with physics... :-) 
+             *   
+             * - The ball's colour should be affected even when accumulating gas, i.e. altitude and colour should not be coupled. 
+             *   
+             * This might be a good guide to physics: http://gamedev.stackexchange.com/a/16466
+             * Or keep googling for "game physics gravity force acceleration"
+             * */
+            double amount;
+
+            amount = -(_dropSpeed * _gasPressure / Size.Width);
+
+            amount = -Math.Pow(_dropSpeed, _gasPressure) / Size.Width;
+
+            amount = -Math.Sqrt(_gasPressure) * _dropSpeed / Size.Width;
+
+            amount = -Math.Sqrt(_gasPressure) * _dropSpeed / Math.Log(Size.Width);
+
+            return amount;
+            
         }
 
     }
