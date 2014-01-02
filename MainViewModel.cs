@@ -14,6 +14,8 @@ namespace Bubbles
         private int _numberOfBubbles = 10;
         private static Random _random = new Random();
         private DispatcherTimer _bubbleTimer;
+        private DispatcherTimer _gameLoopTimer;
+
 
         public MainViewModel()
         {
@@ -22,7 +24,12 @@ namespace Bubbles
             _bubbleTimer = new DispatcherTimer();
             _bubbleTimer.Interval = TimeSpan.FromMilliseconds(500);
             _bubbleTimer.Tick += _dispatcherTimer_Tick;
+
+            _gameLoopTimer = new DispatcherTimer();
+            _gameLoopTimer.Interval = TimeSpan.FromMilliseconds(20); // A 20 ms period => 50 frames per second. TODO: Is that too frequent? Profile the loop now and then.
+            _gameLoopTimer.Tick += _gameLoopTimer_Tick;
         }
+
 
 
         public ObservableCollection<GameObject> GameObjects { get; private set; }
@@ -41,6 +48,9 @@ namespace Bubbles
 
             // Dropping in the bubbles at random intervals
             _bubbleTimer.Start();
+
+            // Start the game loop. 
+            _gameLoopTimer.Start();
         }
 
         void _dispatcherTimer_Tick(object sender, object e)
@@ -57,6 +67,16 @@ namespace Bubbles
             {
                 _bubbleTimer.Stop();
             }
+        }
+
+        void _gameLoopTimer_Tick(object sender, object e)
+        {
+            int numberOfGameObjects = GameObjects.Count;
+            for (int i = 0; i < numberOfGameObjects; i++)
+            {
+                GameObjects[i].Update();
+            }
+
         }
 
     }

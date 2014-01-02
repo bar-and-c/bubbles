@@ -46,7 +46,7 @@ namespace Bubbles
 
                 /* TODO: Boosting the value just to get a visible change on the opacity. 
                  * As stated elsewhere - think it through! Maybe it's better done elsewhere. Etc. */
-                b.Gas += ConvertToGamePressure(e.GetCurrentPoint(ellipse).Properties.Pressure);
+                b.AddGas(ConvertToGamePressure(e.GetCurrentPoint(ellipse).Properties.Pressure));
             }
         }
 
