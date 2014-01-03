@@ -46,7 +46,7 @@ namespace Bubbles
 
                 /* TODO: Boosting the value just to get a visible change on the opacity. 
                  * As stated elsewhere - think it through! Maybe it's better done elsewhere. Etc. */
-                b.AddGas(ConvertToGamePressure(e.GetCurrentPoint(ellipse).Properties.Pressure));
+                b.BoostGas(ConvertToGamePressure(e.GetCurrentPoint(ellipse).Properties.Pressure));
             }
         }
 
@@ -57,6 +57,26 @@ namespace Bubbles
             double offset = 0.53;
             double scaledIncomingPressure = (p - offset) * 2; // TODO: Think it through properly, after some sleep!!!
             return Math.Pow(100, scaledIncomingPressure);
+        }
+
+        private void Ellipse_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            Ellipse ellipse = (Ellipse)e.OriginalSource;
+            if (ellipse.DataContext is Bubble)
+            {
+                Bubble b = (Bubble)ellipse.DataContext;
+                b.HoldBubble = true;
+            }
+        }
+
+        private void Ellipse_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            Ellipse ellipse = (Ellipse)e.OriginalSource;
+            if (ellipse.DataContext is Bubble)
+            {
+                Bubble b = (Bubble)ellipse.DataContext;
+                b.HoldBubble = false;
+            }
         }
 
     }

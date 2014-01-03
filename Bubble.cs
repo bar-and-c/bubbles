@@ -17,8 +17,12 @@ namespace Bubbles
         private double _maxGas;
         private double _gasPressure;
         private Size _gameArea;
+
+#if apa
         private double _dropSpeed;
         private double _dropSpeedIncrease;
+#endif
+
 
         public Bubble(Size GameArea)
         {
@@ -30,17 +34,21 @@ namespace Bubbles
             _maxGas = Math.Pow(diameter, 2); // TODO: It is related to size. Experiment to the right amount.
 
             _gas = 0;
-            double minInitalGasAmount = _maxGas / 4;
+            double minInitalGasAmount = _maxGas / 5;
             double maxInitialGasAmount = _maxGas - minInitalGasAmount;
             double randomFactor = r.NextDouble() * (maxInitialGasAmount - minInitalGasAmount);
-            AddGas(minInitalGasAmount + randomFactor);
+            SetGas(minInitalGasAmount + randomFactor);
 
             int margin = 100;
-            Left = r.Next(margin, (int)_gameArea.Width - margin);
-            Top = GetHorizontalPositionFromGasPressure();
+            X = r.Next(margin, (int)_gameArea.Width - margin);
+            Y = -300;
 
+            _area = diameter * diameter / 100;
+
+#if apa
             _dropSpeed = 5; // TODO: Experiment to a good value. This will be increased over time. 
             _dropSpeedIncrease = 0.05;
+#endif
         }
 
         // This is basically just a relative gas metric, normalized for GUI usage. TODO: A bit smelly.
@@ -57,10 +65,37 @@ namespace Bubbles
             }
         }
 
-        public void AddGas(double gasAmount)
-        {
-            _gas += gasAmount;
+        private double _gasBoostAmount = 0;
+        private double _gasBoostDecline = 2;
 
+        private bool _holdBubble;
+        public bool HoldBubble 
+        {
+            get { return _holdBubble; } 
+            set
+            {
+                // TODO: Only allow hold if no boost stored?
+                _holdBubble = value;
+                if (!_holdBubble)
+                {
+                    // When releasing, give the bubble a push of at the most a little more than gravitation.
+                    _gasBoost =  Math.Min(_gas / _gasBoostAmount, 13);
+                }
+            }
+        }
+
+        private double _maxGasBoostFactor = 0.1;
+        private double _gasBoost;
+        public void BoostGas(double gasBoost)
+        {
+                _gasBoostAmount += gasBoost;
+                System.Diagnostics.Debug.WriteLine("Boost: {0}", _gasBoostAmount);
+                SetGas(_gas + gasBoost);
+        }
+
+        private void SetGas(double gasAmount)
+        {
+            _gas = gasAmount;
             UpdateRelativeGasPressure();
         }
 
@@ -81,14 +116,80 @@ namespace Bubbles
         }
 
 
+
+
+
+
+        // Physics from http://buildnewgames.com/gamephysics/
+
+        private double _vx = 0;
+        private double _vy = 0;
+
+        private double _ax = 0;
+        private double _ay = 0;
+
+        private double Mass { get { return (_area + _gas) / 2; } }
+
+        private double _dt = 0.02;
+
+        private double _airResistance = 500;
+
+        private double _area;
+
+        private double _gravity = 9.81;
+
+        private double _gasLeakFactor = 0.0005;
+
+
+        /* Todo: 
+         * The gas stuff doesn't go too well. Maybe just have a tiny leak, let the boost fill it to near max, 
+         * and give a brief upwards thrust? Maybe, maybe, maybe. 
+         */
+
+        int i;
         public override void Update()
         {
             base.Update();
 
+            if (_holdBubble) return;
+
+            double gravitationForce = Mass * _gravity;
+
+
+            double airResistanceForce = -(0.5 * _airResistance * _area * _vy * _vy);
+
+            double gasBoostForce = -(Mass * _gasBoost);
+            _gasBoost = (_gasBoost - 0.5 > 0) ? _gasBoost - 1.0 : 0;
+
+
+            if ((i % 50) == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("g: {0}, air: {1}, gas:{2}", gravitationForce, airResistanceForce, gasBoostForce);
+            }
+            i++;
+
+            double forceY = gravitationForce + airResistanceForce + gasBoostForce;
+
+
+            double dy = _vy * _dt + (0.5 * _ay * _dt * _dt);
+            Y += dy * 100;
+
+            double newAccelerationY = forceY / Mass;
+            double averageAccelerationY = 0.5 * (newAccelerationY + _ay);
+            _vy += averageAccelerationY * _dt;
+
+            // Lose a little gas over time
+            SetGas(_gas - _gasLeakFactor * _gas);
+        }
+
+#if apa
+
+        public override void Update()
+        {
+            base.Update();
             AddGas(GetGasLeakage());
             _dropSpeed += _dropSpeedIncrease;
-            Top = GetHorizontalPositionFromGasPressure();
-
+            Y = GetHorizontalPositionFromGasPressure();
         }
 
         private double GetGasLeakage()
@@ -133,6 +234,6 @@ namespace Bubbles
             return amount;
             
         }
-
+#endif
     }
 }

@@ -44,7 +44,7 @@ namespace Bubbles
             GameObjects.Clear();
 
             // TODO: Adding another GameObject to test the GUI stuff. Still, it looks pretty cool, might keep it in. 
-            GameObjects.Add(new GameObject() { Left = GameArea.Width/2 - 250, Top = 900 });
+      //      GameObjects.Add(new GameObject() { X = GameArea.Width/2 - 250, Y = 900 });
 
             // Dropping in the bubbles at random intervals
             _bubbleTimer.Start();

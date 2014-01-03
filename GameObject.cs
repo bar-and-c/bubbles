@@ -35,40 +35,37 @@ namespace Bubbles
             }
         }
 
-
-        private double _top;
-        public double Top
+        private double _y;
+        public double Y
         {
-            get { return _top; }
-            set 
-            {
-                if (value != _top)
-                {
-                    _top = value;
-                    OnPropertyChanged("Top");
-                }
-            }
-        }
-
-        private double _left;
-        public double Left
-        {
-            get { return _left; }
+            get { return _y; }
             set
             {
-                if (value != _left)
+                if (value != _y)
                 {
-                    _left = value;
-                    OnPropertyChanged("Left");
+                    _y = value;
+                    OnPropertyChanged("Y");
                 }
             }
         }
 
-
+        private double _x;
+        public double X
+        {
+            get { return _x; }
+            set
+            {
+                if (value != _x)
+                {
+                    _x = value;
+                    OnPropertyChanged("X");
+                }
+            }
+        }
 
         public virtual void Update()
         {
-            // TODO: Add movement 
         }
+
     }
 }
