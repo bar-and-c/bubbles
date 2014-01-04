@@ -68,19 +68,13 @@ namespace Bubbles
         private double _gasBoostAmount = 0;
         private double _gasBoostDecline = 2;
 
-        private bool _holdBubble;
-        public bool HoldBubble 
+        private bool _boostBubble;
+        public bool BoostBubble 
         {
-            get { return _holdBubble; } 
+            get { return _boostBubble; } 
             set
             {
-                // TODO: Only allow hold if no boost stored?
-                _holdBubble = value;
-                if (!_holdBubble)
-                {
-                    // When releasing, give the bubble a push of at the most a little more than gravitation.
-                    _gasBoost =  Math.Min(_gas / _gasBoostAmount, 13);
-                }
+                _boostBubble = value;
             }
         }
 
@@ -132,7 +126,7 @@ namespace Bubbles
 
         private double _dt = 0.02;
 
-        private double _airResistance = 500;
+        private double _airResistance = 1000;
 
         private double _area;
 
@@ -151,20 +145,39 @@ namespace Bubbles
         {
             base.Update();
 
-            if (_holdBubble) return;
 
             double gravitationForce = Mass * _gravity;
 
 
             double airResistanceForce = -(0.5 * _airResistance * _area * _vy * _vy);
 
-            double gasBoostForce = -(Mass * _gasBoost);
-            _gasBoost = (_gasBoost - 0.5 > 0) ? _gasBoost - 1.0 : 0;
-
-
-            if ((i % 50) == 0)
+            double gasBoostForce = 0;
+            if (BoostBubble)
             {
-                System.Diagnostics.Debug.WriteLine("g: {0}, air: {1}, gas:{2}", gravitationForce, airResistanceForce, gasBoostForce);
+                gasBoostForce = -(_gasBoostAmount * 300);
+                _gasBoostAmount = 0;
+                BoostBubble = false;
+
+
+
+                _gasBoostAmount = _gasBoostAmount * 0.4;
+                if (_gasBoostAmount < 5000)
+                {
+                    _gasBoostAmount = 0;
+                    BoostBubble = false;
+                }
+            }
+
+            // If the resulting force is upwards, the air resistance should be downwards
+            if (Math.Sign(gravitationForce + gasBoostForce) < 0)
+            {
+                airResistanceForce = -airResistanceForce;
+            }
+
+
+            if (BoostBubble || ((i % 50) == 0))
+            {
+                System.Diagnostics.Debug.WriteLine("g: {0}, air: {1}, gas:{2}, b: {3}", gravitationForce, airResistanceForce, gasBoostForce, BoostBubble);
             }
             i++;
 
@@ -177,6 +190,9 @@ namespace Bubbles
             double newAccelerationY = forceY / Mass;
             double averageAccelerationY = 0.5 * (newAccelerationY + _ay);
             _vy += averageAccelerationY * _dt;
+
+//            if (BoostBubble) _vy += -10;
+            //BoostBubble = false;
 
             // Lose a little gas over time
             SetGas(_gas - _gasLeakFactor * _gas);

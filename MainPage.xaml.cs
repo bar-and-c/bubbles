@@ -65,7 +65,6 @@ namespace Bubbles
             if (ellipse.DataContext is Bubble)
             {
                 Bubble b = (Bubble)ellipse.DataContext;
-                b.HoldBubble = true;
             }
         }
 
@@ -75,7 +74,7 @@ namespace Bubbles
             if (ellipse.DataContext is Bubble)
             {
                 Bubble b = (Bubble)ellipse.DataContext;
-                b.HoldBubble = false;
+                b.BoostBubble = true;
             }
         }
 
