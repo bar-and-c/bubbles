@@ -126,7 +126,7 @@ namespace Bubbles
 
         private double _dt = 0.02;
 
-        private double _airResistance = 1000;
+        private double _airResistance = 1500;
 
         private double _area;
 
@@ -154,7 +154,7 @@ namespace Bubbles
             double gasBoostForce = 0;
             if (BoostBubble)
             {
-                gasBoostForce = -(_gasBoostAmount * 300);
+                gasBoostForce = -(_gasBoostAmount * 200);
                 _gasBoostAmount = 0;
                 BoostBubble = false;
 
