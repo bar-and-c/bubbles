@@ -40,7 +40,7 @@ namespace Bubbles
             Top = GetHorizontalPositionFromGasPressure();
 
             _dropSpeed = 5; // TODO: Experiment to a good value. This will be increased over time. 
-            _dropSpeedIncrease = 0.05;
+            _dropSpeedIncrease = 0.02;
         }
 
         // This is basically just a relative gas metric, normalized for GUI usage. TODO: A bit smelly.
