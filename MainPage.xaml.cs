@@ -39,9 +39,9 @@ namespace Bubbles
 
         private void Ellipse_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            if (e.OriginalSource is Ellipse)
+            if (e.OriginalSource is Windows.UI.Xaml.Shapes.Path)
             {
-                Ellipse ellipse = (Ellipse)e.OriginalSource;
+                Windows.UI.Xaml.Shapes.Path ellipse = (Windows.UI.Xaml.Shapes.Path)e.OriginalSource;
                 if (ellipse.DataContext is Bubble)
                 {
                     Bubble b = (Bubble)ellipse.DataContext;
@@ -69,9 +69,10 @@ namespace Bubbles
 
         private void Ellipse_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            if (e.OriginalSource is Ellipse)
+            if (e.OriginalSource is Windows.UI.Xaml.Shapes.Path)
             {
-                Ellipse ellipse = (Ellipse)e.OriginalSource;
+                Windows.UI.Xaml.Shapes.Path ellipse = (Windows.UI.Xaml.Shapes.Path)e.OriginalSource;
+
                 if (ellipse.DataContext is Bubble)
                 {
                     Bubble b = (Bubble)ellipse.DataContext;
@@ -81,9 +82,9 @@ namespace Bubbles
 
         private void Ellipse_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            if (e.OriginalSource is Ellipse)
+            if (e.OriginalSource is Windows.UI.Xaml.Shapes.Path)
             {
-                Ellipse ellipse = (Ellipse)e.OriginalSource;
+                Windows.UI.Xaml.Shapes.Path ellipse = (Windows.UI.Xaml.Shapes.Path)e.OriginalSource;
                 if (ellipse.DataContext is Bubble)
                 {
                     Bubble b = (Bubble)ellipse.DataContext;
