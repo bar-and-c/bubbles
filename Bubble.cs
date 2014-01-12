@@ -1,4 +1,7 @@
-﻿using System;
+﻿#define USE_RELATIVE_COLOR_INCREASE
+
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -16,7 +19,11 @@ namespace Bubbles
         private double _colorDiameter;
         private Size _gameArea;
 
-        private const double _diameterIncreaseFactor = 0.02;
+#if USE_RELATIVE_COLOR_INCREASE
+        private const double _diameterIncreaseFactor = 0.015;
+#else
+        private const double _diameterIncreaseFactor = 1;
+#endif
 
 
         public Bubble(Size GameArea)
@@ -37,9 +44,17 @@ namespace Bubbles
             get { return _colorDiameter; }
             set 
             {
-                if (value != _colorDiameter)
+                if ((value != _colorDiameter) && (!IsPopped))
                 {
-                    _colorDiameter = value;
+                    if (value < Size.Width)
+                    {
+                        _colorDiameter = value;
+                    }
+                    else
+                    {
+                        IsPopped = true;
+                        _colorDiameter = Size.Width;
+                    }
                     OnPropertyChanged("ColorDiameter");
                 }
             }
@@ -91,7 +106,28 @@ namespace Bubbles
 
         internal void AddColor(double pressure)
         {
+#if USE_RELATIVE_COLOR_INCREASE
             ColorDiameter += pressure * Size.Width * _diameterIncreaseFactor;
+#else
+            ColorDiameter += pressure * _diameterIncreaseFactor;
+#endif
+        }
+
+        private bool _isPopped = false;
+        public bool IsPopped
+        {
+            get
+            {
+                return _isPopped;
+            }
+            set
+            {
+                if (value != _isPopped)
+                {
+                    _isPopped = value;
+                    OnPropertyChanged("IsPopped");
+                }
+            }
         }
     }
 }
