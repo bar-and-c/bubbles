@@ -1,5 +1,4 @@
-﻿#define USE_RELATIVE_COLOR_INCREASE
-
+﻿
 
 using System;
 using System.Collections.Generic;
@@ -16,14 +15,10 @@ namespace Bubbles
 
     public class Bubble : GameObject
     {
-        private double _colorDiameter;
         private Size _gameArea;
 
-#if USE_RELATIVE_COLOR_INCREASE
-        private const double _diameterIncreaseFactor = 0.015;
-#else
-        private const double _diameterIncreaseFactor = 1;
-#endif
+        private double _fillRatio = 0;
+        private const double _fillIncreaseFactor = 0.01;
 
         private double _radiusX;
         public double RadiusX
@@ -34,6 +29,7 @@ namespace Bubbles
                 if (value != _radiusX)
                 {
                     _radiusX = value;
+                    ColorRadiusX = _fillRatio * _radiusX;
                     OnPropertyChanged("RadiusX");
                 }
             }
@@ -49,9 +45,55 @@ namespace Bubbles
                 {
                     _radiusY = value;
                     OnPropertyChanged("RadiusY");
+                    ColorRadiusY = _fillRatio * _radiusY;
                 }
             }
         }
+
+        private double _colorRadiusX;
+        public double ColorRadiusX
+        {
+            get { return _colorRadiusX; }
+            set
+            {
+                if ((value != _colorRadiusX) && (!IsPopped))
+                {
+                    if (value < RadiusX)
+                    {
+                        _colorRadiusX = value;
+                    }
+                    else
+                    {
+                        IsPopped = true;
+                        _colorRadiusX = RadiusX;
+                    }
+                    OnPropertyChanged("ColorRadiusX");
+                }
+            }
+        }
+
+        private double _colorRadiusY;
+        public double ColorRadiusY
+        {
+            get { return _colorRadiusY; }
+            set
+            {
+                if ((value != _colorRadiusY) && (!IsPopped))
+                {
+                    if (value < RadiusY)
+                    {
+                        _colorRadiusY = value;
+                    }
+                    else
+                    {
+                        IsPopped = true;
+                        _colorRadiusY = RadiusY;
+                    }
+                    OnPropertyChanged("ColorRadiusY");
+                }
+            }
+        }
+
 
         public Bubble(Size GameArea)
         {
@@ -61,33 +103,13 @@ namespace Bubbles
             RadiusX = radius;
             RadiusY = radius;
 
-            ColorDiameter = 0;
+            ColorRadiusX = 0;
 
             int margin = 100;
             X = r.Next(margin, (int)_gameArea.Width - margin);
             Y = r.Next(-radius, 200);
         }
 
-        public double ColorDiameter
-        {
-            get { return _colorDiameter; }
-            set 
-            {
-                if ((value != _colorDiameter) && (!IsPopped))
-                {
-                    if (value < RadiusY)
-                    {
-                        _colorDiameter = value;
-                    }
-                    else
-                    {
-                        IsPopped = true;
-                        _colorDiameter = Size.Width;
-                    }
-                    OnPropertyChanged("ColorDiameter");
-                }
-            }
-        }
 
 
 
@@ -126,6 +148,9 @@ namespace Bubbles
 
 
             double dy = _vy * _dt + (0.5 * _ay * _dt * _dt);
+
+            // Flattening the bubbles as they hit the ground. 
+            /* TODO: As a bubble flattens completely, turn into a line and raise the bottom level. */
             double yIncrease = dy * 100;
             if ((Y + yIncrease + RadiusY) < _gameArea.Height)
             {
@@ -148,11 +173,9 @@ namespace Bubbles
 
         internal void AddColor(double pressure)
         {
-#if USE_RELATIVE_COLOR_INCREASE
-            ColorDiameter += pressure * RadiusX * _diameterIncreaseFactor;
-#else
-            ColorDiameter += pressure * _diameterIncreaseFactor;
-#endif
+            _fillRatio += pressure * _fillIncreaseFactor;
+            ColorRadiusX = _fillRatio * RadiusX;
+            ColorRadiusY = _fillRatio * RadiusY;
         }
 
         private bool _isPopped = false;

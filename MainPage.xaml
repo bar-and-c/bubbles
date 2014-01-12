@@ -13,7 +13,7 @@
             <Canvas>
                 <Path  Fill="Red" >
                     <Path.Data>
-                        <EllipseGeometry RadiusX="{Binding ColorDiameter}" RadiusY="{Binding ColorDiameter}" />
+                        <EllipseGeometry RadiusX="{Binding ColorRadiusX}" RadiusY="{Binding ColorRadiusY}" />
                     </Path.Data>
                 </Path>
                 <Path Opacity="0.1" Fill="DarkGray" PointerPressed="Ellipse_PointerPressed" PointerReleased="Ellipse_PointerReleased" PointerMoved="Ellipse_PointerMoved">
