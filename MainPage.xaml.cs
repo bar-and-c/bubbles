@@ -39,14 +39,17 @@ namespace Bubbles
 
         private void Ellipse_PointerMoved(object sender, PointerRoutedEventArgs e)
         {
-            Ellipse ellipse = (Ellipse) e.OriginalSource;
-            if (ellipse.DataContext is Bubble)
+            if (e.OriginalSource is Ellipse)
             {
-                Bubble b = (Bubble)ellipse.DataContext;
+                Ellipse ellipse = (Ellipse)e.OriginalSource;
+                if (ellipse.DataContext is Bubble)
+                {
+                    Bubble b = (Bubble)ellipse.DataContext;
 
-                /* TODO: Boosting the value just to get a visible change on the opacity. 
-                 * As stated elsewhere - think it through! Maybe it's better done elsewhere. Etc. */
-                b.BoostGas(ConvertToGamePressure(e.GetCurrentPoint(ellipse).Properties.Pressure));
+                    /* TODO: Boosting the value just to get a visible change on the opacity. 
+                     * As stated elsewhere - think it through! Maybe it's better done elsewhere. Etc. */
+                    b.AddColor(ConvertToGamePressure(e.GetCurrentPoint(ellipse).Properties.Pressure));
+                }
             }
         }
 
@@ -55,26 +58,36 @@ namespace Bubbles
         {
             // Minimum pressure is about 0.53, maximum is 1.0 
             double offset = 0.53;
-            double scaledIncomingPressure = (p - offset) * 2; // TODO: Think it through properly, after some sleep!!!
-            return Math.Pow(100, scaledIncomingPressure);
+            double scaledIncomingPressure;
+            scaledIncomingPressure = Math.Pow(2.15 * (p - offset), 2);
+//            scaledIncomingPressure = Math.Pow(4.4, p - offset) - 1;
+            scaledIncomingPressure = Math.Min(scaledIncomingPressure, 1);
+            scaledIncomingPressure = Math.Max(scaledIncomingPressure, 0);
+            System.Diagnostics.Debug.WriteLine("P: {0}, scaled: {1}", p, scaledIncomingPressure);
+            return scaledIncomingPressure;
         }
 
         private void Ellipse_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            Ellipse ellipse = (Ellipse)e.OriginalSource;
-            if (ellipse.DataContext is Bubble)
+            if (e.OriginalSource is Ellipse)
             {
-                Bubble b = (Bubble)ellipse.DataContext;
+                Ellipse ellipse = (Ellipse)e.OriginalSource;
+                if (ellipse.DataContext is Bubble)
+                {
+                    Bubble b = (Bubble)ellipse.DataContext;
+                }
             }
         }
 
         private void Ellipse_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            Ellipse ellipse = (Ellipse)e.OriginalSource;
-            if (ellipse.DataContext is Bubble)
+            if (e.OriginalSource is Ellipse)
             {
-                Bubble b = (Bubble)ellipse.DataContext;
-                b.BoostBubble = true;
+                Ellipse ellipse = (Ellipse)e.OriginalSource;
+                if (ellipse.DataContext is Bubble)
+                {
+                    Bubble b = (Bubble)ellipse.DataContext;
+                }
             }
         }
 
