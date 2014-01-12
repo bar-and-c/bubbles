@@ -18,12 +18,12 @@
                 </Path>
                 <Path Opacity="0.1" Fill="DarkGray" PointerPressed="Ellipse_PointerPressed" PointerReleased="Ellipse_PointerReleased" PointerMoved="Ellipse_PointerMoved">
                     <Path.Data>
-                        <EllipseGeometry RadiusX="{Binding Size.Width}" RadiusY="{Binding Size.Height}" />
+                        <EllipseGeometry RadiusX="{Binding RadiusX}" RadiusY="{Binding RadiusY}" />
                     </Path.Data>
                 </Path>
                 <Path x:Name="_ellipse" Stroke="WhiteSmoke" StrokeThickness="2" >
                     <Path.Data>
-                        <EllipseGeometry RadiusX="{Binding Size.Width}" RadiusY="{Binding Size.Height}" />
+                        <EllipseGeometry RadiusX="{Binding RadiusX}" RadiusY="{Binding RadiusY}" />
                     </Path.Data>
                 </Path>
 
