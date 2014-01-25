@@ -16,7 +16,7 @@
                         <EllipseGeometry RadiusX="{Binding ColorRadiusX}" RadiusY="{Binding ColorRadiusY}" />
                     </Path.Data>
                 </Path>
-                <Path Opacity="0.1" Fill="DarkGray" PointerPressed="Ellipse_PointerPressed" PointerReleased="Ellipse_PointerReleased" PointerMoved="Ellipse_PointerMoved">
+                <Path Opacity="0.1" Fill="DarkGray" PointerPressed="Ellipse_PointerPressed" PointerReleased="Ellipse_PointerReleased" PointerMoved="Ellipse_PointerMoved" PointerCaptureLost="Ellipse_PointerCaptureLost" PointerCanceled="Path_PointerCanceled" PointerExited="Path_PointerExited">
                     <Path.Data>
                         <EllipseGeometry RadiusX="{Binding RadiusX}" RadiusY="{Binding RadiusY}" />
                     </Path.Data>
