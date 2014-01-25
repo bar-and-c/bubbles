@@ -16,6 +16,7 @@ namespace Bubbles
         private DispatcherTimer _bubbleTimer;
         private DispatcherTimer _gameLoopTimer;
 
+        SoundMachine _soundMachine;
 
         public MainViewModel()
         {
@@ -29,6 +30,8 @@ namespace Bubbles
             _gameLoopTimer.Interval = TimeSpan.FromMilliseconds(20); // A 20 ms period => 50 frames per second. TODO: Is that too frequent? Profile the loop now and then.
             _gameLoopTimer.Tick += _gameLoopTimer_Tick;
 
+            _soundMachine = new SoundMachine();
+            _soundMachine.InitAudio();
         }
 
 
@@ -76,7 +79,12 @@ namespace Bubbles
         {
             if ((sender is Bubble) && (e.PropertyName == "IsPopped"))
             {
+                // Stop noise
+                Noisesizer n = _soundMachine.GetNoiseForObject(sender);
+                n.Off();
+
                 // TODO: Play sound
+                
 
                 // TODO: Add cool graphics
 
@@ -95,6 +103,12 @@ namespace Bubbles
         }
 
 
+        internal void Pressed(Bubble b, double p)
+        {
+            Noisesizer n = _soundMachine.GetNoiseForObject((object)b);
+            n.On();
+        }
+
         internal void Pressure(Bubble b, double p)
         {
             // Add some color to the bubble
@@ -105,7 +119,14 @@ namespace Bubbles
              * Get the Noiseziser associated with this bubble, if any (if not, get a free one). 
              * Send pressure info to it.
              */
-//            SoundMachine s = new SoundMachine();
+            Noisesizer n = _soundMachine.GetNoiseForObject((object)b);
+            n.RelativeFrequency = (float)p;
+        }
+
+        internal void Released(Bubble b)
+        {
+            Noisesizer n = _soundMachine.GetNoiseForObject((object)b);
+            n.Off();
         }
     }
 }
