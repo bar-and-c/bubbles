@@ -28,6 +28,7 @@ namespace Bubbles
             _gameLoopTimer = new DispatcherTimer();
             _gameLoopTimer.Interval = TimeSpan.FromMilliseconds(20); // A 20 ms period => 50 frames per second. TODO: Is that too frequent? Profile the loop now and then.
             _gameLoopTimer.Tick += _gameLoopTimer_Tick;
+
         }
 
 
@@ -44,7 +45,7 @@ namespace Bubbles
             GameObjects.Clear();
 
             // TODO: Adding another GameObject to test the GUI stuff. Still, it looks pretty cool, might keep it in. 
-            GameObjects.Add(new GameObject() { Left = GameArea.Width/2 - 250, Top = 900 });
+      //      GameObjects.Add(new GameObject() { X = GameArea.Width/2 - 250, Y = 900 });
 
             // Dropping in the bubbles at random intervals
             _bubbleTimer.Start();
@@ -57,7 +58,9 @@ namespace Bubbles
         {
             if (GameObjects.Count < _numberOfBubbles)
             {
-                GameObjects.Add(new Bubble(GameArea));
+                Bubble b = new Bubble(GameArea);
+                b.PropertyChanged += b_PropertyChanged;
+                GameObjects.Add(b);
             }
             if (GameObjects.Count < _numberOfBubbles)
             {
@@ -66,6 +69,18 @@ namespace Bubbles
             else
             {
                 _bubbleTimer.Stop();
+            }
+        }
+
+        void b_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if ((sender is Bubble) && (e.PropertyName == "IsPopped"))
+            {
+                // TODO: Play sound
+
+                // TODO: Add cool graphics
+
+                GameObjects.Remove((Bubble)sender);
             }
         }
 

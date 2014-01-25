@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -13,126 +15,185 @@ namespace Bubbles
 
     public class Bubble : GameObject
     {
-        private double _gas;
-        private double _maxGas;
-        private double _gasPressure;
         private Size _gameArea;
-        private double _dropSpeed;
-        private double _dropSpeedIncrease;
+
+        private double _fillRatio = 0;
+        private const double _fillIncreaseFactor = 0.01;
+
+
+        private double _radiusX;
+        public double RadiusX
+        {
+            get { return _radiusX; }
+            set
+            {
+                if (value != _radiusX)
+                {
+                    _radiusX = value;
+                    ColorRadiusX = _fillRatio * _radiusX;
+                    OnPropertyChanged("RadiusX");
+                }
+            }
+        }
+
+        private double _radiusY;
+        public double RadiusY
+        {
+            get { return _radiusY; }
+            set
+            {
+                if (value != _radiusY)
+                {
+                    _radiusY = value;
+                    OnPropertyChanged("RadiusY");
+                    ColorRadiusY = _fillRatio * _radiusY;
+                }
+            }
+        }
+
+        private double _colorRadiusX;
+        public double ColorRadiusX
+        {
+            get { return _colorRadiusX; }
+            set
+            {
+                if ((value != _colorRadiusX) && (!IsPopped))
+                {
+                    if (value < RadiusX)
+                    {
+                        _colorRadiusX = value;
+                    }
+                    else
+                    {
+                        IsPopped = true;
+                        _colorRadiusX = RadiusX;
+                    }
+                    OnPropertyChanged("ColorRadiusX");
+                }
+            }
+        }
+
+        private double _colorRadiusY;
+        public double ColorRadiusY
+        {
+            get { return _colorRadiusY; }
+            set
+            {
+                if ((value != _colorRadiusY) && (!IsPopped))
+                {
+                    if (value < RadiusY)
+                    {
+                        _colorRadiusY = value;
+                    }
+                    else
+                    {
+                        IsPopped = true;
+                        _colorRadiusY = RadiusY;
+                    }
+                    OnPropertyChanged("ColorRadiusY");
+                }
+            }
+        }
+
 
         public Bubble(Size GameArea)
         {
             this._gameArea = GameArea;
             Random r = new Random();
-            int diameter = r.Next(40, 200);
-            Size = new Size(diameter, diameter);
+            int radius = r.Next(40, 150);
+            RadiusX = radius;
+            RadiusY = radius;
 
-            _maxGas = Math.Pow(diameter, 2); // TODO: It is related to size. Experiment to the right amount.
-
-            _gas = 0;
-            double minInitalGasAmount = _maxGas / 4;
-            double maxInitialGasAmount = _maxGas - minInitalGasAmount;
-            double randomFactor = r.NextDouble() * (maxInitialGasAmount - minInitalGasAmount);
-            AddGas(minInitalGasAmount + randomFactor);
+            ColorRadiusX = 0;
 
             int margin = 100;
-            Left = r.Next(margin, (int)_gameArea.Width - margin);
-            Top = GetHorizontalPositionFromGasPressure();
-
-            _dropSpeed = 5; // TODO: Experiment to a good value. This will be increased over time. 
-            _dropSpeedIncrease = 0.02;
+            X = r.Next(margin, (int)_gameArea.Width - margin);
+            Y = r.Next(-radius, 200);
         }
 
-        // This is basically just a relative gas metric, normalized for GUI usage. TODO: A bit smelly.
-        public double GasPressure
-        {
-            get { return _gasPressure; }
-            set 
-            {
-            if (value != _gasPressure)
-            {
-                _gasPressure = value;
-                OnPropertyChanged("GasPressure");
-            }
-            }
-        }
 
-        public void AddGas(double gasAmount)
-        {
-            _gas += gasAmount;
 
-            UpdateRelativeGasPressure();
-        }
 
-        private void UpdateRelativeGasPressure()
-        {
-            // TODO: Think this through. This is where the touch pressure gets in - how shall it be represented in the model?
-            if (_gas > _maxGas)
-                GasPressure = 1.0;
-            else if (_gas < 0)
-                GasPressure = 0;
-            else
-                GasPressure = _gas / _maxGas;
-        }
 
-        private double GetHorizontalPositionFromGasPressure()
-        {
-            return (1 - GasPressure) * _gameArea.Height; // The y-level is supposed to be related to the "gas pressure". 
-        }
+
+        // Physics from http://buildnewgames.com/gamephysics/
+
+        private double _vx = 0;
+        private double _vy = 0;
+
+        private double _ax = 0;
+        private double _ay = 0;
+
+        private double Mass { get { return (RadiusX * RadiusY); } }
+
+        private double _dt = 0.02;
+
+        private double _airResistance = 1000;
+
+        private double _gravity = 9.81;
+
 
 
         public override void Update()
         {
             base.Update();
 
-            AddGas(GetGasLeakage());
-            _dropSpeed += _dropSpeedIncrease;
-            Top = GetHorizontalPositionFromGasPressure();
+
+            double gravitationForce = Mass * _gravity;
+
+
+            double airResistanceForce = -(0.5 * _airResistance * RadiusX * _vy * _vy);
+
+
+            double forceY = gravitationForce + airResistanceForce;
+
+
+            double dy = _vy * _dt + (0.5 * _ay * _dt * _dt);
+
+            // Flattening the bubbles as they hit the ground. 
+            /* TODO: As a bubble flattens completely, turn into a line and raise the bottom level. */
+            double yIncrease = dy * 100;
+            if ((Y + yIncrease + RadiusY) < _gameArea.Height)
+            {
+                Y += yIncrease;
+            }
+            else if ((RadiusY + yIncrease / 2) > 2)
+            {
+                Y += yIncrease / 2;
+                RadiusY -= yIncrease / 2;
+                RadiusX += yIncrease;
+            }
+
+
+            double newAccelerationY = forceY / Mass;
+            double averageAccelerationY = 0.5 * (newAccelerationY + _ay);
+            _vy += averageAccelerationY * _dt;
+
 
         }
 
-        private double GetGasLeakage()
+        internal void AddColor(double pressure)
         {
-            /* A first shot at it. 
-             * It should be based on size. And pressure? Yes, that sounds reasonable.
-             * A smaller bubble leaks gas faster, I think. It also fills up faster. 
-             * Higher pressure (i.e. higher altitude) means a larger leakage. 
-             * And it should be negative, since it's a leakage.
-             * 
-             * Experimenting here, making it inversely proportional to the diameter, not area. 
-             * And multiplying with some constant to keep the drop velocity reasonable.
-             */
-
-            /* A second thought, after experimenting a bit (see below).
-             * I think I'd better go all in on the physics instead. Formulate these things 
-             * in terms of mass/force/acceleration etc.:
-             * 
-             * - Pressing a ball could hold it still while we add gas (i.e. accumulate in a seperate variable).
-             * 
-             * - Releasing a ball could use that accumulated gas amount as a force upwards, resulting in acceleration upwards. 
-             * 
-             * - There is also acceleration downwards. Does mass come into this? Mass in our case is the amount of gas, innit?
-             *   Not really, there's also the ball's size. But all that would imply that bigger balls fall faster, unlike my experiments. 
-             *   Still, these experiments stink anyway, probably better off with physics... :-) 
-             *   
-             * - The ball's colour should be affected even when accumulating gas, i.e. altitude and colour should not be coupled. 
-             *   
-             * This might be a good guide to physics: http://gamedev.stackexchange.com/a/16466
-             * Or keep googling for "game physics gravity force acceleration"
-             * */
-            double amount;
-
-            amount = -(_dropSpeed * _gasPressure / Size.Width);
-
-            amount = -Math.Pow(_dropSpeed, _gasPressure) / Size.Width;
-
-            amount = -Math.Sqrt(_gasPressure) * _dropSpeed / Size.Width;
-
-            amount = -Math.Sqrt(_gasPressure) * _dropSpeed / Math.Log(Size.Width);
-
-            return amount;
-            
+            _fillRatio += pressure * _fillIncreaseFactor;
+            ColorRadiusX = _fillRatio * RadiusX;
+            ColorRadiusY = _fillRatio * RadiusY;
         }
 
+        private bool _isPopped = false;
+        public bool IsPopped
+        {
+            get
+            {
+                return _isPopped;
+            }
+            set
+            {
+                if (value != _isPopped)
+                {
+                    _isPopped = value;
+                    OnPropertyChanged("IsPopped");
+                }
+            }
+        }
     }
 }

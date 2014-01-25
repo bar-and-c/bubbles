@@ -11,27 +11,44 @@
 
         <DataTemplate x:Key="bubbleTemplate">
             <Canvas>
-                <!-- Work with the colours scheme, but the general idea is that lower "gas pressure" makes the colour fade, 
-                     but leaving a faint shadow and a border. -->
-                <Ellipse Fill="Red" Stroke="WhiteSmoke" Height="{Binding Size.Height}" Width="{Binding Size.Width}" Opacity="{Binding GasPressure}"/>
-                <Ellipse Fill="DarkGray" Opacity="0.2" Height="{Binding Size.Height}" Width="{Binding Size.Width}" PointerMoved="Ellipse_PointerMoved" />
+                <Path  Fill="Red" >
+                    <Path.Data>
+                        <EllipseGeometry RadiusX="{Binding ColorRadiusX}" RadiusY="{Binding ColorRadiusY}" />
+                    </Path.Data>
+                </Path>
+                <Path Opacity="0.1" Fill="DarkGray" PointerPressed="Ellipse_PointerPressed" PointerReleased="Ellipse_PointerReleased" PointerMoved="Ellipse_PointerMoved">
+                    <Path.Data>
+                        <EllipseGeometry RadiusX="{Binding RadiusX}" RadiusY="{Binding RadiusY}" />
+                    </Path.Data>
+                </Path>
+                <Path x:Name="_ellipse" Stroke="WhiteSmoke" StrokeThickness="2" >
+                    <Path.Data>
+                        <EllipseGeometry RadiusX="{Binding RadiusX}" RadiusY="{Binding RadiusY}" />
+                    </Path.Data>
+                </Path>
+
+                <!--
+                <Ellipse Fill="Red" Stroke="WhiteSmoke" Height="{Binding ColorDiameter}" Width="{Binding ColorDiameter}" Opacity="0.8"/>
+                <Ellipse Fill="DarkGray" Opacity="0.2" Height="{Binding Size.Height}" Width="{Binding Size.Width}" PointerPressed="Ellipse_PointerPressed" PointerReleased="Ellipse_PointerReleased" PointerMoved="Ellipse_PointerMoved" />
                 <Ellipse Stroke="WhiteSmoke"  Height="{Binding Size.Height}" Width="{Binding Size.Width}" />
+                -->
                 <Canvas.RenderTransform>
                     <TransformGroup>
                         <RotateTransform Angle="0"/>
-                        <TranslateTransform X="{Binding Left}" Y="{Binding Top}"/>
+                        <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
                     </TransformGroup>
                 </Canvas.RenderTransform>
             </Canvas>
         </DataTemplate>
 
+
         <!-- TODO: Should I define templates for dying objects here? And obstacles, of course. For now, this is just for test purposes. -->
         <DataTemplate x:Key="someOtherTemplate">
-            <Ellipse Fill="White" Width="500" Height="30" Canvas.Left="200" Canvas.Top="200" Opacity="0.4" PointerMoved="Ellipse_PointerMoved" >
+            <Ellipse Fill="White" Width="500" Height="30" Canvas.Left="200" Canvas.Top="200" Opacity="0.4" PointerPressed="Ellipse_PointerPressed" PointerReleased="Ellipse_PointerReleased" PointerMoved="Ellipse_PointerMoved" >
                 <Ellipse.RenderTransform>
                     <TransformGroup>
                         <RotateTransform Angle="0"/>
-                        <TranslateTransform X="{Binding Left}" Y="{Binding Top, Mode=TwoWay}"/>
+                        <TranslateTransform X="{Binding X}" Y="{Binding Y, Mode=TwoWay}"/>
                     </TransformGroup>
                 </Ellipse.RenderTransform>
             </Ellipse>
