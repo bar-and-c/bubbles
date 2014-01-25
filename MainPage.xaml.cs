@@ -46,9 +46,7 @@ namespace Bubbles
                 {
                     Bubble b = (Bubble)ellipse.DataContext;
 
-                    /* TODO: Boosting the value just to get a visible change on the opacity. 
-                     * As stated elsewhere - think it through! Maybe it's better done elsewhere. Etc. */
-                    b.AddColor(ConvertToGamePressure(e.GetCurrentPoint(ellipse).Properties.Pressure));
+                    _viewModel.Pressure(b, ConvertToGamePressure(e.GetCurrentPoint(ellipse).Properties.Pressure));
                 }
             }
         }

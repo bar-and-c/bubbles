@@ -94,5 +94,18 @@ namespace Bubbles
 
         }
 
+
+        internal void Pressure(Bubble b, double p)
+        {
+            // Add some color to the bubble
+            b.AddColor(p);
+
+            // And change the noise
+            /* TODO:
+             * Get the Noiseziser associated with this bubble, if any (if not, get a free one). 
+             * Send pressure info to it.
+             */
+//            SoundMachine s = new SoundMachine();
+        }
     }
 }
