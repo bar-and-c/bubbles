@@ -12,26 +12,15 @@ namespace Bubbles
     public class Noisesizer : ISampleProvider
     {
 
-        private BiQuadFilter _filter;
-
         private SignalGenerator _signalGenerator;
 
         private float _amplitude = 0.1f;
 
-        public float FilterBaseFrequency { get; set; }
-
         private float _relativeFrequency;
-        public float RelativeFrequency 
+        public void Modulate(float amount)
         {
-            get { return _relativeFrequency; } 
-            set
-            {
-                if (value != _relativeFrequency)
-                {
-                    _relativeFrequency = value;
-                    _filterBankIndex = (int) (value * (_numberOfFilterBanks - 1));
-                }
-            }
+            _relativeFrequency = amount;
+            _filterBankIndex = (int)(amount * (_numberOfFilterBanks - 1));
         }
 
         private float _filterQ = 20;
@@ -43,19 +32,19 @@ namespace Bubbles
         private List<BiQuadFilter> _filterBank;
         private const int _minFrequency = 100; // Hz
         private const int _maxFrequency = 5000; // Hz
+        private float _maxAmplitude;
 
         private int _filterBankIndex = 0;
 
-        public Noisesizer()
+        public Noisesizer(int sampleRate, float maxAmplitude)
         {
-            _signalGenerator = new SignalGenerator(48000, 1); // TODO: Consider stereo!
+            _maxAmplitude = maxAmplitude;
+
+            _signalGenerator = new SignalGenerator(sampleRate, 1); // TODO: Consider stereo!
             _signalGenerator.Type = SignalGeneratorType.White;
 
             GetDefaultDeviceInfo();
             
-            _filter = BiQuadFilter.BandPassFilterConstantPeakGain(_signalGenerator.WaveFormat.SampleRate, 400, _filterQ);
-          //  _filter = BiQuadFilter.LowPassFilter(_signalGenerator.WaveFormat.SampleRate, 400, 20);
-
             _filterBank = new List<BiQuadFilter>();
             for (int i = 0; i < _numberOfFilterBanks; i++)
             {
@@ -120,14 +109,14 @@ namespace Bubbles
             /* When starting a noise, it's better not to have a really bright filter to start with, as it initially 
              * typically is low (i.e. if not starting at a low filter setting a high pitched glitch is heard). 
              * An alternative could be to lock the RelativeFrequency when not on. */
-            RelativeFrequency = 0;
-            _amplitude = 0.1f;
+            _relativeFrequency = 0;
+            _amplitude = _maxAmplitude;
         }
 
         internal void Off()
         {
             _amplitude = 0;
-            RelativeFrequency = 0;
+            _relativeFrequency = 0;
         }
     }
 }

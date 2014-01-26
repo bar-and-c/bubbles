@@ -11,12 +11,14 @@ namespace Bubbles
 {
     public class MainViewModel
     {
-        private int _numberOfBubbles = 10;
+        private int _numberOfBubbles = 100; // TODO: Change the code so that the bubbles keep coming, until the app is unloaded (or the screen is filled with flattened bubbles)
         private static Random _random = new Random();
         private DispatcherTimer _bubbleTimer;
         private DispatcherTimer _gameLoopTimer;
 
-        SoundMachine _soundMachine;
+        private SoundMachine _soundMachine;
+
+        private readonly object _gameObjectLock = new object();
 
         public MainViewModel()
         {
@@ -44,12 +46,10 @@ namespace Bubbles
 
         internal void NewGame()
         {
-
-            GameObjects.Clear();
-
-            // TODO: Adding another GameObject to test the GUI stuff. Still, it looks pretty cool, might keep it in. 
-      //      GameObjects.Add(new GameObject() { X = GameArea.Width/2 - 250, Y = 900 });
-
+            lock (_gameObjectLock)
+            {
+                GameObjects.Clear();
+            }
             // Dropping in the bubbles at random intervals
             _bubbleTimer.Start();
 
@@ -59,11 +59,14 @@ namespace Bubbles
 
         void _dispatcherTimer_Tick(object sender, object e)
         {
-            if (GameObjects.Count < _numberOfBubbles)
+            lock (_gameObjectLock)
             {
-                Bubble b = new Bubble(GameArea);
-                b.PropertyChanged += b_PropertyChanged;
-                GameObjects.Add(b);
+                if (GameObjects.Count < _numberOfBubbles)
+                {
+                    Bubble b = new Bubble(GameArea);
+                    b.PropertyChanged += b_PropertyChanged;
+                    GameObjects.Add(b);
+                }
             }
             if (GameObjects.Count < _numberOfBubbles)
             {
@@ -80,53 +83,51 @@ namespace Bubbles
             if ((sender is Bubble) && (e.PropertyName == "IsPopped"))
             {
                 // Stop noise
-                Noisesizer n = _soundMachine.GetNoiseForObject(sender);
-                n.Off();
+                _soundMachine.StopNoiseForObject(sender);
 
                 // Play sound
                 _soundMachine.KickSweepForObject(sender);
 
-                // TODO: Add cool graphics
+                // TODO: Add cool graphics...?
 
-                GameObjects.Remove((Bubble)sender);
+
+                lock (_gameObjectLock)
+                {
+                    GameObjects.Remove((Bubble)sender);
+                }
             }
         }
 
         void _gameLoopTimer_Tick(object sender, object e)
         {
-            int numberOfGameObjects = GameObjects.Count;
-            for (int i = 0; i < numberOfGameObjects; i++)
+            lock (_gameObjectLock)
             {
-                GameObjects[i].Update();
+                int numberOfGameObjects = GameObjects.Count;
+                for (int i = 0; i < numberOfGameObjects; i++)
+                {
+                    GameObjects[i].Update();
+                }
             }
-
         }
 
 
-        internal void Pressed(Bubble b, double p)
+        internal void Pressed(Bubble bubble)
         {
-            Noisesizer n = _soundMachine.GetNoiseForObject((object)b);
-            n.On();
+            _soundMachine.StartNoiseForObject(bubble);
         }
 
-        internal void Pressure(Bubble b, double p)
+        internal void Pressure(Bubble bubble, double pressure)
         {
             // Add some color to the bubble
-            b.AddColor(p);
+            bubble.AddColor(pressure);
 
             // And change the noise
-            /* TODO:
-             * Get the Noiseziser associated with this bubble, if any (if not, get a free one). 
-             * Send pressure info to it.
-             */
-            Noisesizer n = _soundMachine.GetNoiseForObject((object)b);
-            n.RelativeFrequency = (float)p;
+            _soundMachine.ModulateNoiseForObject(bubble, pressure);
         }
 
-        internal void Released(Bubble b)
+        internal void Released(Bubble bubble)
         {
-            Noisesizer n = _soundMachine.GetNoiseForObject((object)b);
-            n.Off();
+            _soundMachine.StopNoiseForObject(bubble);
         }
     }
 }
