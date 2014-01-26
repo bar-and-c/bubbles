@@ -114,6 +114,7 @@
     <Compile Include="MainViewModel.cs" />
     <Compile Include="Noisesizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SignalGenerator.cs" />
     <Compile Include="SoundMachine.cs" />
   </ItemGroup>
   <ItemGroup>
