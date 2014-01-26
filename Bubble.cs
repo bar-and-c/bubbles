@@ -18,7 +18,7 @@ namespace Bubbles
         private Size _gameArea;
 
         private double _fillRatio = 0;
-        private const double _fillIncreaseFactor = 0.015;
+        private const double _fillIncreaseFactor = 0.01;
 
 
         private double _radiusX;
