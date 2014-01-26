@@ -44,7 +44,7 @@ namespace Bubbles
             // Minimum pressure is about 0.53, maximum is 1.0 
             double offset = 0.53;
             double scaledIncomingPressure;
-            scaledIncomingPressure = Math.Pow(2.12 * (p - offset), 5);
+            scaledIncomingPressure = Math.Pow(2.12 * (p - offset), 2);
             scaledIncomingPressure = Math.Min(Math.Max(scaledIncomingPressure, 0), 1); // Clamp the value
             System.Diagnostics.Debug.WriteLine("P: {0}, scaled: {1}", p, scaledIncomingPressure);
             return scaledIncomingPressure;
