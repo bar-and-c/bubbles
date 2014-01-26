@@ -83,8 +83,8 @@ namespace Bubbles
                 Noisesizer n = _soundMachine.GetNoiseForObject(sender);
                 n.Off();
 
-                // TODO: Play sound
-                
+                // Play sound
+                _soundMachine.KickSweepForObject(sender);
 
                 // TODO: Add cool graphics
 
