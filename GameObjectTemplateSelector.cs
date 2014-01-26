@@ -10,7 +10,7 @@ namespace Bubbles
 {
     public class GameObjectTemplateSelector : DataTemplateSelector
     {
-        // TODO: Change these names! Add/remove DataTemplate properties as applicable. 
+        // TODO: Add/remove DataTemplate properties as applicable. 
         public DataTemplate OtherTemplate { get; set; }
         public DataTemplate BubbleTemplate { get; set; }
 
@@ -18,7 +18,7 @@ namespace Bubbles
         {
             if (item is GameObject)
             {
-                // TODO: Later on, there will be a more GameObject classes than Bubble, something like Obstacle, and possibly other...
+                // TODO: Later on, there might be more GameObject classes than Bubble, something like Obstacle, and possibly other...
                 //GameObject gameObject = (GameObject)item;
                 DataTemplate dt = item is Bubble ? this.BubbleTemplate : this.OtherTemplate;
                 return dt;
