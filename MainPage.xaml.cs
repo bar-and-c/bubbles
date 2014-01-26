@@ -41,13 +41,8 @@ namespace Bubbles
         // For a better game experience, transform the incoming pressure to something more exciting.
         private double ConvertToGamePressure(float p)
         {
-            // Minimum pressure is about 0.53, maximum is 1.0 
-            double offset = 0.53;
-            double scaledIncomingPressure;
-            scaledIncomingPressure = Math.Pow(2.12 * (p - offset), 2);
-            scaledIncomingPressure = Math.Min(Math.Max(scaledIncomingPressure, 0), 1); // Clamp the value
-            System.Diagnostics.Debug.WriteLine("P: {0}, scaled: {1}", p, scaledIncomingPressure);
-            return scaledIncomingPressure;
+            // NOTE: I have experimented with exponential conversion, but after all I think linear is allright
+            return Math.Min(Math.Max((p-0.53)/0.47, 0), 1); // Clamp the value
         }
 
         private void Ellipse_PointerMoved(object sender, PointerRoutedEventArgs e)
@@ -74,7 +69,7 @@ namespace Bubbles
                 if (ellipse.DataContext is Bubble)
                 {
                     Bubble b = (Bubble)ellipse.DataContext;
-                    _viewModel.Pressed(b, ConvertToGamePressure(e.GetCurrentPoint(ellipse).Properties.Pressure));
+                    _viewModel.Pressed(b);
                 }
             }
         }
