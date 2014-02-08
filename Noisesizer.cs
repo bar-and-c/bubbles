@@ -40,7 +40,7 @@ namespace Bubbles
         {
             _maxAmplitude = maxAmplitude;
 
-            _signalGenerator = new SignalGenerator(sampleRate, 1); // TODO: Consider stereo!
+            _signalGenerator = new SignalGenerator(sampleRate, 1); // TODO: Consider stereo, panning the sounds depending on horizontal position!
             _signalGenerator.Type = SignalGeneratorType.White;
 
             GetDefaultDeviceInfo();

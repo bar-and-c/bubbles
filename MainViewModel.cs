@@ -11,7 +11,6 @@ namespace Bubbles
 {
     public class MainViewModel
     {
-        private int _numberOfBubbles = 100; // TODO: Change the code so that the bubbles keep coming, until the app is unloaded (or the screen is filled with flattened bubbles)
         private static Random _random = new Random();
         private DispatcherTimer _bubbleTimer;
         private DispatcherTimer _gameLoopTimer;
@@ -29,7 +28,7 @@ namespace Bubbles
             _bubbleTimer.Tick += _dispatcherTimer_Tick;
 
             _gameLoopTimer = new DispatcherTimer();
-            _gameLoopTimer.Interval = TimeSpan.FromMilliseconds(20); // A 20 ms period => 50 frames per second. TODO: Is that too frequent? Profile the loop now and then.
+            _gameLoopTimer.Interval = TimeSpan.FromMilliseconds(20);
             _gameLoopTimer.Tick += _gameLoopTimer_Tick;
 
             _soundMachine = new SoundMachine();
@@ -61,21 +60,11 @@ namespace Bubbles
         {
             lock (_gameObjectLock)
             {
-                if (GameObjects.Count < _numberOfBubbles)
-                {
-                    Bubble b = new Bubble(GameArea);
-                    b.PropertyChanged += b_PropertyChanged;
-                    GameObjects.Add(b);
-                }
+                Bubble b = new Bubble(GameArea);
+                b.PropertyChanged += b_PropertyChanged;
+                GameObjects.Add(b);
             }
-            if (GameObjects.Count < _numberOfBubbles)
-            {
-                _bubbleTimer.Interval = TimeSpan.FromMilliseconds(_random.Next(500, 2000));
-            }
-            else
-            {
-                _bubbleTimer.Stop();
-            }
+            _bubbleTimer.Interval = TimeSpan.FromMilliseconds(_random.Next(500, 2000));
         }
 
         void b_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
