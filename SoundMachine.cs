@@ -13,10 +13,10 @@ namespace Bubbles
         const int _numberOfSimultaneousSounds = 10; // Ten finger touch, I believe
 
         Dictionary<object, Noisesizer> _activeNoisesizers;
-        object _noisesizerLock = new object();
+        List<Noisesizer> _availableNoisesizers;
+        int _noisesizerIndex;
         List<SignalGenerator> _activeSweepers;
         int _sweeperIndex;
-        object _sweeperLock = new object();
 
         List<ISampleProvider> _sampleProviders;
 
@@ -34,17 +34,20 @@ namespace Bubbles
             _sampleProviders = new List<ISampleProvider>();
 
             _activeNoisesizers = new Dictionary<object, Noisesizer>();
+            _availableNoisesizers = new List<Noisesizer>();
             _activeSweepers = new List<SignalGenerator>();
             for (int i = 0; i < _numberOfSimultaneousSounds; i++)
             {
                 Noisesizer n = CreateNoiseGenerator();
                 _sampleProviders.Add(n);
+                _availableNoisesizers.Add(n);
 
                 SignalGenerator s = CreateSweeper();
                 _activeSweepers.Add(s);
                 _sampleProviders.Add(s);
             }
             _sweeperIndex = 0;
+            _noisesizerIndex = 0;
 
             _mixer = new MixingSampleProvider(_sampleProviders);
         }
@@ -82,81 +85,45 @@ namespace Bubbles
 
         internal void StartNoiseForObject(object p)
         {
-            lock (_noisesizerLock)
+            if (!_activeNoisesizers.ContainsKey(p))
             {
-                if (!_activeNoisesizers.ContainsKey(p))
-                {
-                    ActivateNoisesizerForObject(p);
-                }
-                _activeNoisesizers[p].On();
+                _activeNoisesizers[p] = GetNextNoisesizer();
             }
+            _activeNoisesizers[p].On();
         }
 
         internal void ModulateNoiseForObject(object p, double pressure)
         {
-            lock (_noisesizerLock)
+            if (!_activeNoisesizers.ContainsKey(p))
             {
-                if (!_activeNoisesizers.ContainsKey(p))
-                {
-                    ActivateNoisesizerForObject(p);
-                    _activeNoisesizers[p].On(); // If not already active it needs to be On()
-                }
-                _activeNoisesizers[p].Modulate((float)pressure);
+                _activeNoisesizers[p] = GetNextNoisesizer();
+                _activeNoisesizers[p].On(); // If not already active it needs to be On()
             }
+            _activeNoisesizers[p].Modulate((float)pressure);
         }
 
         internal void StopNoiseForObject(object p)
         {
-            lock (_noisesizerLock)
+            if (_activeNoisesizers.ContainsKey(p))
             {
-                if (_activeNoisesizers.ContainsKey(p))
-                {
-                    _activeNoisesizers[p].Off();
-                    _activeNoisesizers.Remove(_activeNoisesizers[p]);
-                }
+                _activeNoisesizers[p].Off();
+                _activeNoisesizers.Remove(_activeNoisesizers[p]);
             }
         }
-
-
 
         internal void KickSweepForObject(object p)
         {
-            int sweeperIndex;
-            lock (_sweeperLock)
-            {
-                sweeperIndex = _sweeperIndex++;
-                if (_sweeperIndex == _numberOfSimultaneousSounds)
-                {
-                    _sweeperIndex = 0;
-                }
-            }
-            _activeSweepers[sweeperIndex].KickSweep();
+            _activeSweepers[_sweeperIndex].KickSweep();
+            _sweeperIndex = (_sweeperIndex + 1) % _numberOfSimultaneousSounds;
         }
 
-
-        private void ActivateNoisesizerForObject(object p)
+        private Noisesizer GetNextNoisesizer()
         {
-            Noisesizer objectNoisesizer = null;
-            foreach (ISampleProvider sampleProvider in _sampleProviders)
-            {
-                if (sampleProvider is Noisesizer)
-                {
-                    Noisesizer noisesizer = (Noisesizer)sampleProvider;
-                    if (!_activeNoisesizers.ContainsValue(noisesizer))
-                    {
-                        objectNoisesizer = noisesizer;
-                    }
-                }
-            }
-            if (objectNoisesizer == null)
-            {
-                // There really should be enogh sound generators for all fingers, but if not, take someone elses
-                objectNoisesizer = _activeNoisesizers.First().Value;
-                _activeNoisesizers.Remove(objectNoisesizer);
-            }
-            _activeNoisesizers[p] = objectNoisesizer;
+            Noisesizer noisesizer;
+            noisesizer = _availableNoisesizers[_noisesizerIndex];
+            _noisesizerIndex = (_noisesizerIndex + 1) % _numberOfSimultaneousSounds;
+            return noisesizer;
         }
-        
 
     }
 }
