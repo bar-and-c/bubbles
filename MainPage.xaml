@@ -27,11 +27,6 @@
                     </Path.Data>
                 </Path>
 
-                <!--
-                <Ellipse Fill="Red" Stroke="WhiteSmoke" Height="{Binding ColorDiameter}" Width="{Binding ColorDiameter}" Opacity="0.8"/>
-                <Ellipse Fill="DarkGray" Opacity="0.2" Height="{Binding Size.Height}" Width="{Binding Size.Width}" PointerPressed="Ellipse_PointerPressed" PointerReleased="Ellipse_PointerReleased" PointerMoved="Ellipse_PointerMoved" />
-                <Ellipse Stroke="WhiteSmoke"  Height="{Binding Size.Height}" Width="{Binding Size.Width}" />
-                -->
                 <Canvas.RenderTransform>
                     <TransformGroup>
                         <RotateTransform Angle="0"/>

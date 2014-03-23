@@ -31,6 +31,18 @@ namespace Bubbles
             Loaded += (x, e) => CreateGame();
         }
 
+        // TODO: Unsure about these events... 
+        void Current_Resuming(object sender, object e)
+        {
+            CreateGame();
+        }
+
+        void Current_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        {
+            _viewModel.GameOver();
+            Application.Current.Exit();
+        }
+
         private void CreateGame()
         {
             _viewModel.GameArea = new Size(this.ActualWidth, this.ActualHeight);

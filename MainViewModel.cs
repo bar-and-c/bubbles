@@ -56,6 +56,17 @@ namespace Bubbles
             _gameLoopTimer.Start();
         }
 
+        internal void GameOver()
+        {
+            lock (_gameObjectLock)
+            {
+                GameObjects.Clear();
+            }
+            _bubbleTimer.Stop();
+
+            _gameLoopTimer.Stop();
+        }
+
         void _dispatcherTimer_Tick(object sender, object e)
         {
             lock (_gameObjectLock)
