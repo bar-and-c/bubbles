@@ -11,6 +11,8 @@ This app was made as a demo for a new brand of pressure sensitive monitors, usin
 
 The goal was to write a game, but I dare say the gaming aspect suffered a bit, it turned out more like a little distraction. But it was good fun writing it. 
 
+The main purpose of the demo was to visualize the pressure sensitivity of the screens in an immediate way.
+
 The sounds are made using the same NAudio library I started using when writing Touchbox (see neighbouring repository). 
 
 [Exclusive video footage of the demo.](https://youtu.be/gLL_2k4XqoA)
